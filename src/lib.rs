@@ -11,5 +11,7 @@ pub use client::OpenLibraryClient;
 
 pub mod api_services;
 
+pub mod types;
+
 #[cfg(test)]
 mod tests;
