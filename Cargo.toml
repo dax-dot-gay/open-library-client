@@ -7,11 +7,16 @@ edition = "2024"
 anyhow = "1.0.104"
 bon = "3.10.0"
 chrono = { version = "0.4.45", features = ["serde"] }
+clap = { version = "4.6.6", features = ["cargo"] }
 getset = "0.1.7"
 parking_lot = { version = "0.12.5", features = ["send_guard", "arc_lock", "serde"] }
 reqwest = { version = "0.13.4", features = ["cookies", "gzip", "json", "query", "rustls", "stream"] }
 scraper = { version = "0.27.0", features = ["atomic", "deterministic", "serde"] }
 serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
 thiserror = "2.0.20"
 thiserror-ext = "0.3.0"
 tokio = { version = "1.53.1", features = ["full"] }
+
+[dev-dependencies]
+dotenv = "0.15.0"
