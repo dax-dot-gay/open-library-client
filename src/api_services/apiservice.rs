@@ -9,8 +9,14 @@ macro_rules! api_service {
                 Self(client)
             }
 
+            /// Return the contained API client
             pub fn client(&self) -> crate::OpenLibraryClient {
                 self.0.clone()
+            }
+
+            /// Return the reqwest client
+            pub fn reqwest(&self) -> reqwest::Client {
+                self.client().client()
             }
         }
     };

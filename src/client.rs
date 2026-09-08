@@ -6,6 +6,8 @@ use getset::CloneGetters;
 use parking_lot::RwLock;
 use serde_json::json;
 
+use crate::api_services::SearchAPI;
+
 /// Top-level asynchronous client for OpenLibrary
 #[derive(Clone, Debug, CloneGetters)]
 #[getset(get_clone = "pub")]
@@ -88,5 +90,15 @@ impl OpenLibraryClient {
     /// Return the generated user agent for this client
     pub fn user_agent(&self) -> String {
         Self::generate_ua(self.app())
+    }
+
+    /// Get the internal client instance
+    pub fn client(&self) -> reqwest::Client {
+        self.client.read().clone()
+    }
+
+    /// Get the search API
+    pub fn search(&self) -> SearchAPI {
+        SearchAPI::new(self.clone())
     }
 }
