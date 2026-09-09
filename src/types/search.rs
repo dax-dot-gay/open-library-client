@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 /// Representation of SOLR Universe types
 #[allow(missing_docs)]
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum SearchType {
     #[serde(rename = "type:work")]
     Work,
@@ -17,6 +17,17 @@ pub enum SearchType {
 
     #[serde(rename = "type:subject")]
     Subject,
+}
+
+impl SearchType {
+    /// Get the type string of this [`SearchType`]
+    pub fn as_type(&self) -> String {
+        match self.clone() {
+            SearchType::Work => "work",
+            SearchType::Author => "author",
+            SearchType::Subject => "subject",
+        }.to_string()
+    }
 }
 
 /// Enum defining the SOLR query structure

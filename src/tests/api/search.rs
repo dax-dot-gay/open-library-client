@@ -1,4 +1,4 @@
-use crate::tests::unauthenticated_client;
+use crate::{tests::unauthenticated_client, types::search::SearchType};
 
 #[tokio::test]
 pub async fn api_search_books() -> crate::Result<()> {
@@ -14,7 +14,8 @@ pub async fn api_search_books() -> crate::Result<()> {
         result.results.len() > 0,
         "Should return at least one result"
     );
-    println!("{:?}", result.results[0]);
+    assert_eq!(result.results[0].entity_type(), SearchType::Work, "Should return a Work");
+    println!("{}", result.results[0].reference());
     Ok(())
 }
 
@@ -32,7 +33,8 @@ pub async fn api_search_authors() -> crate::Result<()> {
         result.results.len() > 0,
         "Should return at least one result"
     );
-    println!("{:?}", result.results[0]);
+    assert_eq!(result.results[0].entity_type(), SearchType::Author, "Should return an Author");
+    println!("{}", result.results[0].reference());
     Ok(())
 }
 
@@ -50,6 +52,7 @@ pub async fn api_search_subjects() -> crate::Result<()> {
         result.results.len() > 0,
         "Should return at least one result"
     );
-    println!("{:?}", result.results[0]);
+    assert_eq!(result.results[0].entity_type(), SearchType::Subject, "Should return a Subject");
+    println!("{}", result.results[0].reference());
     Ok(())
 }

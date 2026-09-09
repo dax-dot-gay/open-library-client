@@ -2,6 +2,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::types::search::SearchType;
+
 macro_rules! Entity {
     ($name:ident ($desc:literal) {$($field_name:ident: $field_type:ty),*}) => {
         #[doc = $desc]
@@ -10,6 +12,7 @@ macro_rules! Entity {
         pub struct $name {
             /// Unique key for this document
             pub key: String,
+
             $(#[serde(default)] pub $field_name: Option<$field_type>),*,
 
             /// All returned fields not captured by the strong type
@@ -211,4 +214,40 @@ pub enum SearchableEntity {
     Work(WorkEntity),
     Author(AuthorEntity),
     Subject(SubjectEntity),
+}
+
+impl SearchableEntity {
+    /// Get the [`SearchType`] of this entity
+    pub fn entity_type(&self) -> SearchType {
+        match self.clone() {
+            SearchableEntity::Work(_) => SearchType::Work,
+            SearchableEntity::Author(_) => SearchType::Author,
+            SearchableEntity::Subject(_) => SearchType::Subject,
+        }
+    }
+
+    /// Get a normalized unique reference to this entity in the form:
+    /// `/<type>/<id>`
+    pub fn reference(&self) -> String {
+        let kind = self.entity_type();
+        let key = match self.clone() {
+            SearchableEntity::Work(work_entity) => work_entity.key,
+            SearchableEntity::Author(author_entity) => author_entity.key,
+            SearchableEntity::Subject(subject_entity) => subject_entity.key,
+        };
+
+        let id = key.split("/").last().unwrap().to_string();
+        format!("/{}/{id}", kind.as_type())
+    }
+
+    /// Get the raw ID of this entity (URL parts stripped)
+    pub fn id(&self) -> String {
+        let key = match self.clone() {
+            SearchableEntity::Work(work_entity) => work_entity.key,
+            SearchableEntity::Author(author_entity) => author_entity.key,
+            SearchableEntity::Subject(subject_entity) => subject_entity.key,
+        };
+
+        key.split("/").last().unwrap().to_string()
+    }
 }
