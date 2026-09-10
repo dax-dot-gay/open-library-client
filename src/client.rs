@@ -6,7 +6,7 @@ use getset::CloneGetters;
 use parking_lot::RwLock;
 use serde_json::json;
 
-use crate::{api_services::{SearchOptions, SearchOptionsBuilder}, types::search::{SOLRQuery, SearchType}};
+use crate::{api_services::{SearchOptions, SearchOptionsBuilder}, types::{entity::SearchableEntity, search::{SOLR, SOLRQuery, SearchFields, SearchType}}};
 
 /// Top-level asynchronous client for OpenLibrary
 #[derive(Clone, Debug, CloneGetters)]
@@ -98,7 +98,17 @@ impl OpenLibraryClient {
     }
 
     /// Search for any entity on OpenLibrary
-    pub fn search(&self, kind: SearchType, query: impl Into<SOLRQuery>) -> SearchOptionsBuilder {
-        SearchOptions::builder(self.clone(), kind, query)
+    pub fn search(&self, kind: impl Into<SearchType>, query: impl Into<SOLRQuery>) -> SearchOptionsBuilder {
+        SearchOptions::builder(self.clone(), kind.into(), query)
+    }
+
+    /// Get a single item by ID or reference
+    pub async fn get(&self, kind: impl Into<SearchType>, id: impl Display) -> crate::Result<Option<SearchableEntity>> {
+        let kind = kind.into();
+        let normalized_id = id.to_string().split("/").last().unwrap().to_string();
+        let key = format!("/{}/{normalized_id}", kind.as_key());
+        let search = self.search(kind.clone(), SOLRQuery::new(vec![SOLR::facet(SearchFields::Key, key)])).field(SearchFields::Wildcard).field(SearchFields::Availability).offset(0, 1).build();
+        let results = search.search().await?;
+        Ok(results.results.first().cloned())
     }
 }

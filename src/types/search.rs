@@ -28,6 +28,15 @@ impl SearchType {
             SearchType::Subject => "subject",
         }.to_string()
     }
+
+    /// Get the key string of this [`SearchType`]
+    pub fn as_key(&self) -> String {
+        match self.clone() {
+            SearchType::Work => "works",
+            SearchType::Author => "authors",
+            SearchType::Subject => "subjects",
+        }.to_string()
+    }
 }
 
 /// Enum defining the SOLR query structure

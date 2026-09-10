@@ -15,6 +15,9 @@ pub async fn api_search_books() -> crate::Result<()> {
     );
     assert_eq!(result.results[0].entity_type(), SearchType::Work, "Should return a Work");
     println!("{}", result.results[0].reference());
+    let matches = client.get(SearchType::Work, result.results[0].id()).await?;
+    assert!(matches.is_some(), "Should return a result");
+    println!("{:?}", matches.unwrap());
     Ok(())
 }
 

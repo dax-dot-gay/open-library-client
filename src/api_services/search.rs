@@ -109,6 +109,7 @@ struct QueryParams {
 }
 
 impl SearchOptions {
+    /// Execute the search operation
     pub async fn search(self) -> crate::Result<PaginatedResults> {
         let mut final_fields = self.fields();
         if !final_fields.contains(&SearchFields::Key) {
