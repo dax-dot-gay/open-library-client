@@ -4,8 +4,7 @@ use crate::{tests::unauthenticated_client, types::search::SearchType};
 pub async fn api_search_books() -> crate::Result<()> {
     let client = unauthenticated_client();
     let search = client
-        .search()
-        .books("lord of the rings")
+        .search(SearchType::Work, "lord of the rings")
         .field("*")
         .offset(0, 3)
         .build();
@@ -23,8 +22,7 @@ pub async fn api_search_books() -> crate::Result<()> {
 pub async fn api_search_authors() -> crate::Result<()> {
     let client = unauthenticated_client();
     let search = client
-        .search()
-        .authors("mark twain")
+        .search(SearchType::Author, "mark twain")
         .field("*")
         .offset(0, 3)
         .build();
@@ -41,9 +39,7 @@ pub async fn api_search_authors() -> crate::Result<()> {
 #[tokio::test]
 pub async fn api_search_subjects() -> crate::Result<()> {
     let client = unauthenticated_client();
-    let search = client
-        .search()
-        .subjects("science")
+    let search = client.search(SearchType::Subject, "science")
         .field("*")
         .offset(0, 3)
         .build();

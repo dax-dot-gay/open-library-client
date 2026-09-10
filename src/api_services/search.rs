@@ -5,20 +5,17 @@ use std::collections::HashMap;
 use getset::CloneGetters;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{
+use crate::{OpenLibraryClient, types::{
     result::PaginatedResults,
     search::{PaginationMode, SOLRQuery, SearchFields, SearchType},
-};
-
-super::api_service!(SearchAPI, "Wrapper for the Search API");
-
+}};
 /// Shared struct for query options
 #[derive(bon::Builder, Clone, Debug, CloneGetters)]
 #[getset(get_clone = "pub")]
 pub struct SearchOptions {
     /// The API instance
     #[builder(start_fn)]
-    api: SearchAPI,
+    api: OpenLibraryClient,
 
     /// What type of entity to search for
     #[builder(start_fn)]
@@ -148,29 +145,11 @@ impl SearchOptions {
         .to_string();
 
         let request = self
-            .api()
-            .reqwest()
+            .api().client()
             .get(format!("https://openlibrary.org/{url}"))
             .query(&query);
         let response = request.send().await?.error_for_status()?;
         let content = response.json::<PaginatedResults>().await?;
         Ok(content)
-    }
-}
-
-impl SearchAPI {
-    /// Initiate a search for books (works)
-    pub fn books(&self, query: impl Into<SOLRQuery>) -> SearchOptionsBuilder {
-        SearchOptions::builder(self.clone(), SearchType::Work, query.into())
-    }
-
-    /// Initiate a search for authors
-    pub fn authors(&self, query: impl Into<SOLRQuery>) -> SearchOptionsBuilder {
-        SearchOptions::builder(self.clone(), SearchType::Author, query.into())
-    }
-
-    /// Initiate a search for subjects
-    pub fn subjects(&self, query: impl Into<SOLRQuery>) -> SearchOptionsBuilder {
-        SearchOptions::builder(self.clone(), SearchType::Subject, query.into())
     }
 }

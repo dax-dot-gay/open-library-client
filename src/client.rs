@@ -6,7 +6,7 @@ use getset::CloneGetters;
 use parking_lot::RwLock;
 use serde_json::json;
 
-use crate::api_services::SearchAPI;
+use crate::{api_services::{SearchOptions, SearchOptionsBuilder}, types::search::{SOLRQuery, SearchType}};
 
 /// Top-level asynchronous client for OpenLibrary
 #[derive(Clone, Debug, CloneGetters)]
@@ -97,8 +97,8 @@ impl OpenLibraryClient {
         self.client.read().clone()
     }
 
-    /// Get the search API
-    pub fn search(&self) -> SearchAPI {
-        SearchAPI::new(self.clone())
+    /// Search for any entity on OpenLibrary
+    pub fn search(&self, kind: SearchType, query: impl Into<SOLRQuery>) -> SearchOptionsBuilder {
+        SearchOptions::builder(self.clone(), kind, query)
     }
 }
