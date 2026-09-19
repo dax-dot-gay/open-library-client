@@ -2,10 +2,7 @@
 
 pub mod types;
 
-use reqwest::Method;
-use serde_json::Value;
-
-use crate::{core::types::{Entity, GenericSearchBuilder, PaginatedResults, generic_search}, params};
+use crate::{core::types::{GenericSearchBuilder, generic_search}};
 
 /// Struct representing the core API wrapper
 #[derive(Clone, Debug)]
