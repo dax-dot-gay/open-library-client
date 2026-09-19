@@ -18,12 +18,21 @@ pub struct Client {
 }
 
 impl Client {
-    /// Make a request with this client
-    /// Identical functionality to [`reqwest::Client::request`]
+    /// Make a request with this client, prefixed with "<https://openlibrary.org/>"
     pub fn request(
         &self,
         method: reqwest::Method,
-        url: impl reqwest::IntoUrl,
+        endpoint: impl Into<String>
+    ) -> reqwest::RequestBuilder {
+        self.client.request(method, format!("https://openlibrary.org/{}", endpoint.into().trim_start_matches('/')))
+    }
+
+    /// Make a request with this client, with no prefix
+    /// Identical functionality to [`reqwest::Client::request`]
+    pub fn request_raw(
+        &self,
+        method: reqwest::Method,
+        url: impl reqwest::IntoUrl
     ) -> reqwest::RequestBuilder {
         self.client.request(method, url)
     }

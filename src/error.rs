@@ -22,7 +22,13 @@ pub enum OpenLibraryErrorKind {
 
     /// Invalid authentication provided
     #[error("Authentication failed with code {code}: {reason}")]
-    LoginFailed { code: u16, reason: String },
+    LoginFailed {
+        /// Error status code
+        code: u16,
+
+        /// Failure reason
+        reason: String
+    },
 }
 
 impl OpenLibraryError {

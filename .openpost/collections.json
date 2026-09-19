@@ -2,42 +2,202 @@
   {
     "id": "1789847452663",
     "name": "OpenLibrary",
-    "folders": [],
-    "requests": [
+    "folders": [
       {
-        "id": "1789847921658",
-        "name": "Search Books",
-        "method": "GET",
-        "url": "/search.json?q=python",
-        "params": [
+        "id": "1789848383342",
+        "name": "Search",
+        "requests": [
           {
-            "key": "q",
-            "value": "python",
-            "enabled": true
-          }
-        ],
-        "headers": [
-          {
-            "key": "Accept",
-            "value": "application/json",
-            "enabled": true
+            "id": "1789848421302",
+            "name": "Search Authors",
+            "method": "GET",
+            "url": "/search/authors.json?q=&fields=&sort=&lang=&offset=&page=&limit=",
+            "params": [
+              {
+                "key": "q",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "fields",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "sort",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "lang",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "offset",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "page",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "limit",
+                "value": "",
+                "enabled": true
+              }
+            ],
+            "headers": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "type": "none"
+            },
+            "auth": {
+              "type": "none"
+            },
+            "inheritAuth": true,
+            "inheritScripts": true
           },
           {
-            "key": "Content-Type",
-            "value": "application/json",
-            "enabled": true
+            "id": "1789848535459",
+            "name": "Search Books",
+            "method": "GET",
+            "url": "/search.json?q=&fields=&sort=&lang=&offset=&page=&limit=",
+            "params": [
+              {
+                "key": "q",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "fields",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "sort",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "lang",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "offset",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "page",
+                "value": "",
+                "enabled": true
+              },
+              {
+                "key": "limit",
+                "value": "",
+                "enabled": true
+              }
+            ],
+            "headers": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "type": "none"
+            },
+            "auth": {
+              "type": "none"
+            },
+            "inheritAuth": true
           }
         ],
-        "body": {
-          "type": "none"
-        },
-        "auth": {
-          "type": "none"
-        },
-        "inheritAuth": true,
-        "inheritScripts": true
+        "folders": []
+      },
+      {
+        "id": "1789851150275",
+        "name": "Authors",
+        "requests": [
+          {
+            "id": "1789851167009",
+            "name": "Get Author",
+            "method": "GET",
+            "url": "/authors/OL3110634A.json",
+            "params": [],
+            "headers": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "type": "none"
+            },
+            "auth": {
+              "type": "none"
+            },
+            "inheritAuth": true,
+            "inheritScripts": true
+          },
+          {
+            "id": "97bcbf44-0773-4f18-848b-67220c5a7fdf",
+            "name": "Get Author Works",
+            "method": "GET",
+            "url": "/authors/OL3110634A/works.json",
+            "params": [],
+            "headers": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "type": "none"
+            },
+            "auth": {
+              "type": "none"
+            },
+            "inheritAuth": true,
+            "inheritScripts": true
+          }
+        ],
+        "folders": []
       }
     ],
+    "requests": [],
     "variables": [
       {
         "key": "base_url",

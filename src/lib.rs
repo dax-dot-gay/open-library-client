@@ -6,8 +6,16 @@
 
 mod error;
 pub use error::{OpenLibraryError, OpenLibraryErrorKind};
-pub(crate) use error::{OpenLibraryError as Error, OpenLibraryErrorKind as ErrorKind, Result};
+pub(crate) use error::{OpenLibraryError as Error, Result};
 
-pub mod core;
 mod client;
 pub use client::Client;
+
+pub mod core;
+pub use core::CoreApi;
+
+mod util;
+pub(crate) use util::*;
+
+#[cfg(test)]
+mod tests;
