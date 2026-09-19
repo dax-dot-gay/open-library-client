@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1789847452663",
+    "name": "OpenLibrary",
+    "folders": [],
+    "requests": [
+      {
+        "id": "1789847921658",
+        "name": "Search Books",
+        "method": "GET",
+        "url": "/search.json?q=python",
+        "params": [
+          {
+            "key": "q",
+            "value": "python",
+            "enabled": true
+          }
+        ],
+        "headers": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "enabled": true
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "body": {
+          "type": "none"
+        },
+        "auth": {
+          "type": "none"
+        },
+        "inheritAuth": true,
+        "inheritScripts": true
+      }
+    ],
+    "variables": [
+      {
+        "key": "base_url",
+        "value": "https://openlibrary.org",
+        "enabled": true
+      },
+      {
+        "key": "user_agent",
+        "value": "open-library-client/test (git@dax.gay)",
+        "enabled": true
+      }
+    ],
+    "preRequestScript": "request.url = environment.get(\"base_url\") + request.url;\nrequest.headers.push({\n  key: 'User-Agent',\n  value: environment.get(\"user_agent\"),\n  enabled: true\n});",
+    "testScript": ""
+  }
+]
