@@ -46,3 +46,22 @@ pub async fn search_subjects() -> crate::Result<()> {
     println!("{}", serde_json::to_string_pretty(&results.results[0]).unwrap());
     Ok(())
 }
+
+#[tokio::test]
+pub async fn get_author() -> crate::Result<()> {
+    let api = client().await;
+    let result = api.core().get_author("OL2623360A").await?;
+    assert!(result.is_some(), "Should return a result");
+    println!("{result:#?}");
+    Ok(())
+}
+
+#[tokio::test]
+pub async fn get_work() -> crate::Result<()> {
+    let api = client().await;
+    let result = api.core().get_work("OL27448W").await?;
+    assert!(result.is_some(), "Should return a result");
+    println!("{result:#?}");
+    Ok(())
+}
+

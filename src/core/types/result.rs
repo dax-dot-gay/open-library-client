@@ -1,8 +1,11 @@
 //! Standardized typed results
 
-use std::{fmt::Display, ops::Deref};
+use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
+use crate::core::types::ExplicitType;
+
+use super::OLID;
 
 macro_rules! ResultType {
     ($name:ident ($desc:literal) {
@@ -51,40 +54,6 @@ impl SearchResultKind {
 
     pub fn subject() -> Self {
         Self::Subject
-    }
-}
-
-/// Normalization wrapper for OLIDs
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
-#[serde(from = "String", into = "String")]
-pub struct OLID(String);
-
-impl Display for OLID {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.0)
-    }
-}
-
-impl From<String> for OLID {
-    fn from(value: String) -> Self {
-        if value.contains("/") {
-            Self(value.split("/").last().unwrap().to_string())
-        } else {
-            Self(value)
-        }
-    }
-}
-
-impl From<OLID> for String {
-    fn from(value: OLID) -> Self {
-        value.0
-    }
-}
-
-impl Deref for OLID {
-    type Target = String;
-    fn deref(&self) -> &Self::Target {
-        &self.0
     }
 }
 
@@ -283,5 +252,78 @@ ResultType!(SearchSubject ("A single subject returned from a subject search") {
         subject_type: String,
         work_count: u64,
         count: u64
+    };
+});
+
+ResultType!(SelectedAuthor ("An author selected with get_author") {
+    required = {
+        /// Unique ID
+        #[serde(default)]
+        key: OLID,
+        /// Result type
+        #[serde(skip_deserializing, default = "SearchResultKind::author")] kind: SearchResultKind
+    };
+    optional = {
+        name: String,
+        eastern_order: bool,
+        personal_name: String,
+        enumeration: String,
+        title: String,
+        alternate_names: Vec<String>,
+        uris: Vec<String>,
+        bio: ExplicitType,
+        location: String,
+        birth_date: String,
+        death_date: String,
+        date: String,
+        wikipedia: String,
+        links: Vec<ExplicitType>,
+        latest_revision: u64,
+        revision: u64,
+        created: ExplicitType,
+        last_modified: ExplicitType,
+        remote_ids: HashMap<String, String>,
+        source_records: Vec<String>,
+        photos: Vec<u64>
+    };
+});
+
+ResultType!(SelectedWork ("A work selected with get_work or get_author_works") {
+    required = {
+        /// Unique ID
+        #[serde(default)]
+        key: OLID,
+        /// Result type
+        #[serde(skip_deserializing, default = "SearchResultKind::work")] kind: SearchResultKind
+    };
+    optional = {
+        title: String,
+        subtitle: String,
+        authors: Vec<ExplicitType>,
+        translated_titles: Vec<ExplicitType>,
+        subjects: Vec<String>,
+        subject_places: Vec<String>,
+        subject_times: Vec<String>,
+        subject_people: Vec<String>,
+        excerpts: Vec<ExplicitType>,
+        series: Vec<ExplicitType>,
+        description: ExplicitType,
+        dewey_number: Vec<String>,
+        lc_classifications: Vec<String>,
+        first_sentence: ExplicitType,
+        original_languages: Vec<ExplicitType>,
+        other_titles: Vec<String>,
+        first_publish_date: String,
+        links: Vec<ExplicitType>,
+        notes: ExplicitType,
+        cover_edition: ExplicitType,
+        covers: Vec<u64>,
+        genres: Vec<ExplicitType>,
+        subgenres: Vec<ExplicitType>,
+        audiences: Vec<ExplicitType>,
+        latest_revision: u64,
+        revision: u64,
+        created: ExplicitType,
+        last_modified: ExplicitType
     };
 });

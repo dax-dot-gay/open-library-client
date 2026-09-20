@@ -8,3 +8,6 @@ pub use search::*;
 
 mod result;
 pub use result::*;
+
+mod parsing;
+pub use parsing::*;

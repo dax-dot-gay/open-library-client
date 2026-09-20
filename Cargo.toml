@@ -9,6 +9,7 @@ bon = "3.10.0"
 cached = { version = "4.0.0", features = ["async"] }
 chrono = { version = "0.4.45", features = ["serde"] }
 clap = { version = "4.6.6", features = ["cargo"] }
+concat-idents = "1.1.5"
 convert_case = "0.12.0"
 getset = "0.1.7"
 parking_lot = { version = "0.12.5", features = ["send_guard", "arc_lock", "serde"] }

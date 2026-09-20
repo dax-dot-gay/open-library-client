@@ -2,7 +2,9 @@
 
 pub mod types;
 
-use crate::{core::types::{GenericSearchBuilder, generic_search}};
+use reqwest::{Method, StatusCode};
+
+use crate::core::types::{GenericSearchBuilder, generic_search};
 
 /// Struct representing the core API wrapper
 #[derive(Clone, Debug)]
@@ -50,5 +52,37 @@ impl CoreApiHandler {
         query: impl Into<String>
     ) -> GenericSearchBuilder<types::SearchSubject> {
         generic_search(self.client.clone(), types::SearchResultKind::Subject, query.into())
+    }
+
+    /// Retrieve a specific author
+    /// Endpoint: [/authors/{author}](https://openlibrary.org/authors/{author})
+    pub async fn get_author(&self, olid: impl Into<String>) -> crate::Result<Option<types::SelectedAuthor>> {
+        let result = self.client.request(Method::GET, format!("authors/{}.json", olid.into())).send().await?;
+        if result.status() == StatusCode::NOT_FOUND {
+            Ok(None)
+        } else if result.status().is_success() {
+            let val = result.json::<serde_json::Value>().await?;
+            //println!("{val}");
+            Ok(Some(serde_json::from_value::<types::SelectedAuthor>(val)?))
+        } else {
+            result.error_for_status()?;
+            unreachable!();
+        }
+    }
+
+    /// Retrieve a specific work
+    /// Endpoint: [/works/{work}](https://openlibrary.org/works/{work})
+    pub async fn get_work(&self, olid: impl Into<String>) -> crate::Result<Option<types::SelectedWork>> {
+        let result = self.client.request(Method::GET, format!("works/{}.json", olid.into())).send().await?;
+        if result.status() == StatusCode::NOT_FOUND {
+            Ok(None)
+        } else if result.status().is_success() {
+            let val = result.json::<serde_json::Value>().await?;
+            //println!("{val}");
+            Ok(Some(serde_json::from_value::<types::SelectedWork>(val)?))
+        } else {
+            result.error_for_status()?;
+            unreachable!();
+        }
     }
 }
