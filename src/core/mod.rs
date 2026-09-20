@@ -30,8 +30,8 @@ impl CoreApiHandler {
     pub fn search_books(
         &self,
         query: impl Into<String>
-    ) -> GenericSearchBuilder {
-        generic_search(self.client.clone(), types::EntityType::Work, query.into())
+    ) -> GenericSearchBuilder<types::SearchWork> {
+        generic_search(self.client.clone(), types::SearchResultKind::Work, query.into())
     }
 
     /// Search for authors
@@ -39,8 +39,8 @@ impl CoreApiHandler {
     pub fn search_authors(
         &self,
         query: impl Into<String>
-    ) -> GenericSearchBuilder {
-        generic_search(self.client.clone(), types::EntityType::Author, query.into())
+    ) -> GenericSearchBuilder<types::SearchAuthor> {
+        generic_search(self.client.clone(), types::SearchResultKind::Author, query.into())
     }
 
     /// Search for subject
@@ -48,7 +48,7 @@ impl CoreApiHandler {
     pub fn search_subjects(
         &self,
         query: impl Into<String>
-    ) -> GenericSearchBuilder {
-        generic_search(self.client.clone(), types::EntityType::Subject, query.into())
+    ) -> GenericSearchBuilder<types::SearchSubject> {
+        generic_search(self.client.clone(), types::SearchResultKind::Subject, query.into())
     }
 }

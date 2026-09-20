@@ -1,20 +1,21 @@
 //! Abstraction over providing search params
 
 use reqwest::Method;
+use serde::de::DeserializeOwned;
 use serde_json::{Map, Value};
 
 use crate::{
-    core::types::{Entity, PaginatedResults},
+    core::types::PaginatedResults,
     params,
 };
 
 #[bon::builder(finish_fn = search)]
 #[doc(hidden)]
 #[allow(missing_docs)]
-pub async fn generic_search(
+pub async fn generic_search<R: DeserializeOwned>(
     #[builder(start_fn)] client: crate::Client,
 
-    #[builder(start_fn)] kind: super::EntityType,
+    #[builder(start_fn)] kind: super::SearchResultKind,
 
     #[builder(start_fn, into)] q: String,
 
@@ -29,11 +30,11 @@ pub async fn generic_search(
     #[builder(into)] offset: Option<u64>,
 
     #[builder(into)] page: Option<u64>,
-) -> crate::Result<PaginatedResults<Entity>> {
+) -> crate::Result<PaginatedResults<R>> {
     let url = match kind.clone() {
-        super::EntityType::Work => "search.json",
-        super::EntityType::Author => "search/authors.json",
-        super::EntityType::Subject => "search/subjects.json",
+        super::SearchResultKind::Work => "search.json",
+        super::SearchResultKind::Author => "search/authors.json",
+        super::SearchResultKind::Subject => "search/subjects.json",
     }
     .to_string();
 
@@ -85,7 +86,7 @@ pub async fn generic_search(
         .collect::<Vec<_>>();
     let _ = raw.insert(String::from("docs"), Value::Array(updated_results));
 
-    Ok(serde_json::from_value::<PaginatedResults<Entity>>(
+    Ok(serde_json::from_value::<PaginatedResults<R>>(
         Value::Object(raw),
     )?)
 }
