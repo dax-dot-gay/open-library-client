@@ -1,4 +1,4 @@
-//! Representations of OpenLibrary entity types (Work, Author, etc)
+//! Representations of OpenLibrary entity types (Work, Author, etc) returned from searches
 
 use serde::{Deserialize, Serialize};
 

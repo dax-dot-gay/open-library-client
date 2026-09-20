@@ -679,5 +679,185 @@
       "size": 38236,
       "cookies": []
     }
+  },
+  {
+    "id": "1789925668570",
+    "timestamp": 1789925668570,
+    "request": {
+      "id": "1789851167009",
+      "name": "Get Author",
+      "method": "GET",
+      "url": "https://openlibrary.org/authors/OL3110634A.json",
+      "params": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "User-Agent",
+          "value": "open-library-client/test (git@dax.gay)",
+          "enabled": true
+        }
+      ],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "inheritAuth": true,
+      "inheritScripts": true,
+      "preRequestScript": "request.url = environment.get(\"base_url\") + request.url;\nrequest.headers.push({\n  key: 'User-Agent',\n  value: environment.get(\"user_agent\"),\n  enabled: true\n});",
+      "testScript": ""
+    },
+    "response": {
+      "status": 200,
+      "statusText": "",
+      "headers": {
+        "access-control-allow-method": "GET, OPTIONS",
+        "access-control-allow-origin": "*",
+        "access-control-max-age": "86400",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Sun, 20 Sep 2026 17:34:28 GMT",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "nginx/1.30.5",
+        "x-ol-stats": "\"MC 2 0.001 TT 0 0.004\""
+      },
+      "body": "{\"birth_date\": \"8 September 1975\", \"key\": \"/authors/OL3110634A\", \"personal_name\": \"C. Robert Cargill\", \"source_records\": [\"amazon:1596068981\"], \"type\": {\"key\": \"/type/author\"}, \"name\": \"C. Robert Cargill\", \"bio\": {\"type\": \"/type/text\", \"value\": \"American writer\"}, \"remote_ids\": {\"wikidata\": \"Q16201865\", \"gnd\": \"1038078539\"}, \"photos\": [15210973, 15210971], \"latest_revision\": 6, \"revision\": 6, \"created\": {\"type\": \"/type/datetime\", \"value\": \"2008-04-30T08:14:56.482104\"}, \"last_modified\": {\"type\": \"/type/datetime\", \"value\": \"2026-04-15T12:43:04.683507\"}}",
+      "time": 322,
+      "size": 557,
+      "cookies": []
+    }
+  },
+  {
+    "id": "1789925798703",
+    "timestamp": 1789925798703,
+    "request": {
+      "id": "1789848421302",
+      "name": "Search Authors",
+      "method": "GET",
+      "url": "https://openlibrary.org/search/authors.json?q=C. Robert Cargill",
+      "params": [
+        {
+          "key": "q",
+          "value": "C. Robert Cargill",
+          "enabled": true
+        }
+      ],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "User-Agent",
+          "value": "open-library-client/test (git@dax.gay)",
+          "enabled": true
+        }
+      ],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "inheritAuth": true,
+      "inheritScripts": true,
+      "preRequestScript": "request.url = environment.get(\"base_url\") + request.url;\nrequest.headers.push({\n  key: 'User-Agent',\n  value: environment.get(\"user_agent\"),\n  enabled: true\n});",
+      "testScript": ""
+    },
+    "response": {
+      "status": 200,
+      "statusText": "",
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Sun, 20 Sep 2026 17:36:38 GMT",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "nginx/1.30.5",
+        "x-served-by": "FastAPI"
+      },
+      "body": "{\"numFound\":2,\"start\":0,\"numFoundExact\":true,\"docs\":[{\"birth_date\":\"8 September 1975\",\"key\":\"OL3110634A\",\"name\":\"C. Robert Cargill\",\"top_subjects\":[\"Fiction, fantasy, general\",\"Fiction\",\"Magic\",\"Fiction, horror\",\"Imaginary places, fiction\",\"Imaginary places\",\"Fiction, short stories (single author)\",\"Fiction, science fiction, general\",\"Artificial intelligence\",\"American literature\"],\"top_work\":\"Day Zero\",\"type\":\"author\",\"work_count\":13,\"ratings_average\":3.7777777,\"ratings_sortable\":2.925031,\"ratings_count\":9,\"ratings_count_1\":1,\"ratings_count_2\":0,\"ratings_count_3\":2,\"ratings_count_4\":3,\"ratings_count_5\":3,\"want_to_read_count\":48,\"already_read_count\":16,\"currently_reading_count\":2,\"stopped_reading_count\":0,\"readinglog_count\":66,\"_root_\":\"/authors/OL3110634A\",\"_version_\":1867270073958268932},{\"key\":\"OL12661160A\",\"name\":\"C. Robert Cargill\",\"top_subjects\":[\"Fiction, fantasy, general\",\"Science fiction, fantasy, horror\",\"Imaginary places, fiction\"],\"top_work\":\"Queen of the Dark Things\",\"type\":\"author\",\"work_count\":3,\"ratings_average\":0.0,\"ratings_sortable\":2.047372,\"ratings_count\":0,\"ratings_count_1\":0,\"ratings_count_2\":0,\"ratings_count_3\":0,\"ratings_count_4\":0,\"ratings_count_5\":0,\"want_to_read_count\":0,\"already_read_count\":0,\"currently_reading_count\":0,\"stopped_reading_count\":0,\"readinglog_count\":0,\"_root_\":\"/authors/OL12661160A\",\"_version_\":1867215811327819779}]}",
+      "time": 373,
+      "size": 1381,
+      "cookies": []
+    }
+  },
+  {
+    "id": "1789925833493",
+    "timestamp": 1789925833493,
+    "request": {
+      "id": "1789851167009",
+      "name": "Get Author",
+      "method": "GET",
+      "url": "https://openlibrary.org/authors/OL3110634A.json?fields=*",
+      "params": [
+        {
+          "key": "fields",
+          "value": "*",
+          "enabled": true
+        }
+      ],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        },
+        {
+          "key": "User-Agent",
+          "value": "open-library-client/test (git@dax.gay)",
+          "enabled": true
+        }
+      ],
+      "body": {
+        "type": "none"
+      },
+      "auth": {
+        "type": "none"
+      },
+      "inheritAuth": true,
+      "inheritScripts": true,
+      "preRequestScript": "request.url = environment.get(\"base_url\") + request.url;\nrequest.headers.push({\n  key: 'User-Agent',\n  value: environment.get(\"user_agent\"),\n  enabled: true\n});",
+      "testScript": ""
+    },
+    "response": {
+      "status": 200,
+      "statusText": "",
+      "headers": {
+        "access-control-allow-method": "GET, OPTIONS",
+        "access-control-allow-origin": "*",
+        "access-control-max-age": "86400",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Sun, 20 Sep 2026 17:37:13 GMT",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "nginx/1.30.5",
+        "x-ol-stats": "\"MC 2 0.001 TT 0 0.004\""
+      },
+      "body": "{\"birth_date\": \"8 September 1975\", \"key\": \"/authors/OL3110634A\", \"personal_name\": \"C. Robert Cargill\", \"source_records\": [\"amazon:1596068981\"], \"type\": {\"key\": \"/type/author\"}, \"name\": \"C. Robert Cargill\", \"bio\": {\"type\": \"/type/text\", \"value\": \"American writer\"}, \"remote_ids\": {\"wikidata\": \"Q16201865\", \"gnd\": \"1038078539\"}, \"photos\": [15210973, 15210971], \"latest_revision\": 6, \"revision\": 6, \"created\": {\"type\": \"/type/datetime\", \"value\": \"2008-04-30T08:14:56.482104\"}, \"last_modified\": {\"type\": \"/type/datetime\", \"value\": \"2026-04-15T12:43:04.683507\"}}",
+      "time": 371,
+      "size": 557,
+      "cookies": []
+    }
   }
 ]
