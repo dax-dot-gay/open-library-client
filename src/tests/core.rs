@@ -50,8 +50,18 @@ pub async fn search_subjects() -> crate::Result<()> {
 #[tokio::test]
 pub async fn get_author() -> crate::Result<()> {
     let api = client().await;
-    let result = api.core().get_author("OL2623360A").await?;
+    let result = api.core().get_author("OL1394244A").await?;
     assert!(result.is_some(), "Should return a result");
+    println!("{result:#?}");
+    Ok(())
+}
+
+#[tokio::test]
+pub async fn get_author_works() -> crate::Result<()> {
+    let api = client().await;
+    let result = api.core().get_author_works("OL1394244A").limit(50).get().await?;
+    assert!(result.is_some(), "Should return a result");
+    assert!(result.clone().unwrap().entries.len() <= 50, "Should return at most 50 results");
     println!("{result:#?}");
     Ok(())
 }
@@ -71,6 +81,26 @@ pub async fn get_edition() -> crate::Result<()> {
     let result = api.core().get_edition("OL61135107M").await?;
     assert!(result.is_some(), "Should return a result");
     println!("{result:#?}");
+    Ok(())
+}
+
+#[tokio::test]
+pub async fn get_subject() -> crate::Result<()> {
+    let api = client().await;
+    let result = api.core().get_subject("love").details(true).get().await?;
+    assert!(result.works.len() > 0, "Should return at least one work");
+    println!("{result:#?}");
+    Ok(())
+}
+
+#[tokio::test]
+pub async fn get_image() -> crate::Result<()> {
+    let api = client().await;
+    let metadata = api.core().get_cover_image_data("OL35615701M").get().await?;
+    assert_eq!(metadata.olid, "OL35615701M".to_string().into(), "Should return the same OLID");
+    let data = api.core().get_cover_image("OL35615701M").size(crate::core::types::covers::CoverImageSize::Large).get().await?;
+    assert!(data.len() > 0, "Some byte data should be returned");
+    println!("{metadata:#?}");
     Ok(())
 }
 

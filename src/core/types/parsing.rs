@@ -135,6 +135,10 @@ pub(self) enum UnifiedTaggedValue {
     DocsObject {
         docs: Vec<ExplicitType>,
     },
+    KeyedAuthorObject {
+        key: AuthorKT,
+        name: String
+    }
 }
 
 /// Wrapper around various OL type indicators
@@ -185,6 +189,10 @@ pub enum ExplicitType {
         role: String,
     },
     DocsObject(Vec<ExplicitType>),
+    KeyedAuthorObject {
+        key: OLID,
+        name: String
+    }
 }
 
 impl From<UnifiedTaggedValue> for ExplicitType {
@@ -242,6 +250,7 @@ impl From<UnifiedTaggedValue> for ExplicitType {
                 Self::ContributorObject { name, role }
             }
             UnifiedTaggedValue::DocsObject { docs } => Self::DocsObject(docs),
+            UnifiedTaggedValue::KeyedAuthorObject { key, name } => Self::KeyedAuthorObject { key: OLID::from(key.0), name },
         }
     }
 }
@@ -304,6 +313,7 @@ impl From<ExplicitType> for UnifiedTaggedValue {
             ExplicitType::DocsObject(explicit_types) => Self::DocsObject {
                 docs: explicit_types,
             },
+            ExplicitType::KeyedAuthorObject { key, name } => Self::KeyedAuthorObject { key: AuthorKT(format!("/authors/{key}")), name },
         }
     }
 }

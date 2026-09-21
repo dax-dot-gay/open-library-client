@@ -403,3 +403,128 @@ ResultType!(SelectedEdition ("An edition selected with get_edition") {
         last_modified: ExplicitType
     };
 });
+
+/// A representation of an object linked to a [`SelectedSubject`]
+#[allow(missing_docs)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum SubjectRelation {
+    /// The standard format
+    Regular {
+        key: String,
+        name: String,
+        count: u64
+    },
+
+    /// The format of the `languages` key
+    Language {
+        name: String,
+        count: u64
+    },
+
+    /// The format of the `publishing_history` key
+    PublishingHistory(
+        i64,
+        u64
+    )
+}
+
+impl SubjectRelation {
+    /// Get the unique identifier of this relation
+    pub fn identifier(&self) -> String {
+        match self.clone() {
+            SubjectRelation::Regular { key, .. } => key,
+            SubjectRelation::Language { name, .. } => name,
+            SubjectRelation::PublishingHistory(year, _) => year.to_string(),
+        }
+    }
+
+    /// Get the count of this relation
+    pub fn count(&self) -> u64 {
+        match self.clone() {
+            SubjectRelation::Regular { count, .. } => count,
+            SubjectRelation::Language { count, .. } => count,
+            SubjectRelation::PublishingHistory(_, count) => count,
+        }
+    }
+}
+
+ResultType!(SubjectRelatedWork ("A work related to a [`SelectedSubject`]") {
+    required = {
+        /// Unique ID
+        #[serde(default)]
+        key: OLID
+    };
+    optional = {
+        title: String,
+        edition_count: i64,
+        cover_id: i64,
+        cover_edition_key: String,
+        subject: Vec<String>,
+        ia_collection: Vec<String>,
+        printdisabled: bool,
+        lending_edition: String,
+        lending_identifier: String,
+        authors: Vec<ExplicitType>,
+        first_publish_year: i64,
+        ia: String,
+        public_scan: bool,
+        has_fulltext: bool,
+        availability: SearchWorkAvailability
+    };
+});
+
+ResultType!(SelectedSubject ("Subject information selected with get_subject") {
+    required = {
+        /// Unique ID
+        #[serde(default)]
+        key: OLID,
+        name: String,
+        subject_type: String,
+        solr_query: String,
+        work_count: u64,
+        ebook_count: u64,
+
+        #[serde(default)]
+        works: Vec<SubjectRelatedWork>
+    };
+    optional = {
+        subjects: Vec<SubjectRelation>,
+        places: Vec<SubjectRelation>,
+        people: Vec<SubjectRelation>,
+        times: Vec<SubjectRelation>,
+        authors: Vec<SubjectRelation>,
+        publishers: Vec<SubjectRelation>,
+        languages: Vec<SubjectRelation>,
+        publishing_history: Vec<SubjectRelation>
+    };
+});
+
+ResultType!(CoverImage ("Metadata of a cover image from get_cover_image_data") {
+    required = {
+        id: u64,
+        olid: OLID
+    };
+    optional = {
+        category_id: u64,
+        filename: String,
+        author: String,
+        ip: String,
+        source_url: String,
+        isbn: String,
+        source: String,
+        created: String,
+        last_modified: String,
+        archived: bool,
+        failed: bool,
+        width: u64,
+        height: u64,
+        filename_s: String,
+        filename_m: String,
+        filename_l: String,
+        isbn13: String,
+        uploaded: bool,
+        deleted: bool,
+        filename_old: String
+    };
+});

@@ -1,7 +1,7 @@
 //! Strongly-typed representations of basic OpenLibrary types
 
 mod paginated;
-pub use paginated::PaginatedResults;
+pub use paginated::*;
 
 mod search;
 pub use search::*;
@@ -11,3 +11,5 @@ pub use result::*;
 
 mod parsing;
 pub use parsing::*;
+
+pub mod covers;

@@ -35,7 +35,7 @@ pub enum OpenLibraryErrorKind {
         reason: String
     },
 
-    /// Invalid type in /<key>/<value> string
+    /// Invalid type in /{key}/{value} string
     #[error("Invalid type {given} in keystring, expected {expected}")]
     KeyType {
         /// Provided type
