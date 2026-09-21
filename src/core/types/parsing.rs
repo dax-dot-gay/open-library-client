@@ -119,10 +119,11 @@ pub(self) enum UnifiedTaggedValue {
         position: String,
     },
     TocItemObject {
-        class: String,
-        label: String,
-        title: String,
-        pagenum: String,
+        level: Option<i64>,
+        class: Option<String>,
+        label: Option<String>,
+        title: Option<String>,
+        pagenum: Option<String>,
     },
     CollectionObject {
         name: String,
@@ -170,10 +171,11 @@ pub enum ExplicitType {
         position: String,
     },
     TocItemObject {
-        class: String,
-        label: String,
-        title: String,
-        pagenum: String,
+        level: Option<i64>,
+        class: Option<String>,
+        label: Option<String>,
+        title: Option<String>,
+        pagenum: Option<String>,
     },
     CollectionObject {
         name: String,
@@ -227,11 +229,13 @@ impl From<UnifiedTaggedValue> for ExplicitType {
                 label,
                 title,
                 pagenum,
+                level
             } => Self::TocItemObject {
                 class,
                 label,
                 title,
                 pagenum,
+                level
             },
             UnifiedTaggedValue::CollectionObject { name } => Self::CollectionObject { name },
             UnifiedTaggedValue::ContributorObject { name, role } => {
@@ -285,11 +289,13 @@ impl From<ExplicitType> for UnifiedTaggedValue {
                 label,
                 title,
                 pagenum,
+                level
             } => Self::TocItemObject {
                 class,
                 label,
                 title,
                 pagenum,
+                level
             },
             ExplicitType::CollectionObject { name } => Self::CollectionObject { name },
             ExplicitType::ContributorObject { name, role } => {

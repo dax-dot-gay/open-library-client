@@ -283,7 +283,9 @@ ResultType!(SelectedAuthor ("An author selected with get_author") {
         last_modified: ExplicitType,
         remote_ids: HashMap<String, String>,
         source_records: Vec<String>,
-        photos: Vec<i64>
+        photos: Vec<i64>,
+        fuller_name: String,
+        photograph: String
     };
 });
 
@@ -358,6 +360,7 @@ ResultType!(SelectedEdition ("An edition selected with get_edition") {
         pagination: String,
         lccn: Vec<String>,
         ocaid: String,
+        #[serde(alias = "oclc_number")]
         oclc_numbers: Vec<String>,
         isbn_10: Vec<String>,
         isbn_13: Vec<String>,
@@ -385,6 +388,15 @@ ResultType!(SelectedEdition ("An edition selected with get_edition") {
         covers: Vec<i64>,
         local_id: Vec<String>,
         full_title: String,
+        identifiers: HashMap<String, Vec<String>>,
+        contributors: Vec<ExplicitType>,
+        #[serde(alias = "subject_place")]
+        subject_places: Vec<String>,
+        #[serde(alias = "subject_time")]
+        subject_times: Vec<String>,
+        subject_people: Vec<String>,
+        classifications: HashMap<String, Vec<String>>,
+        links: Vec<ExplicitType>,
         latest_revision: i64,
         revision: i64,
         created: ExplicitType,

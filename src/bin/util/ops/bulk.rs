@@ -1,6 +1,6 @@
 use clap::Args;
 use open_library_client::{Client, CoreApi, core::types::SearchWork};
-use std::{fs::File, io::Write, time::Duration};
+use std::{cmp::min, fs::File, io::Write, time::Duration};
 
 #[derive(Clone, Debug, Args)]
 pub struct BulkArgs {
@@ -17,6 +17,34 @@ pub struct BulkArgs {
 }
 
 impl BulkArgs {
+    async fn process_edition(&self, client: &Client, output: &mut File, edition: String) -> crate::Result<()> {
+        let edition_details = client.core().get_edition(edition).await?;
+        if let Some(found_ed) = edition_details {
+            writeln!(output, "          DETAILS: {{")?;
+            let mut trimmed_rest = found_ed.rest.clone();
+            let _ = trimmed_rest.remove(&"type".to_string());
+            writeln!(output, "            REST = {trimmed_rest:?}")?;
+            writeln!(output, "          }}")?;
+        } else {
+            writeln!(output, "          DETAILS: {{NONE}}")?;
+        }
+        Ok(())
+    }
+
+    async fn process_author(&self, client: &Client, output: &mut File, author: String) -> crate::Result<()> {
+        let author_details = client.core().get_author(author).await?;
+        if let Some(found_au) = author_details {
+            writeln!(output, "          DETAILS: {{")?;
+            let mut trimmed_rest = found_au.rest.clone();
+            let _ = trimmed_rest.remove(&"type".to_string());
+            writeln!(output, "            REST = {trimmed_rest:?}")?;
+            writeln!(output, "          }}")?;
+        } else {
+            writeln!(output, "          DETAILS: {{NONE}}")?;
+        }
+        Ok(())
+    }
+
     async fn process_work(
         &self,
         client: &Client,
@@ -27,13 +55,42 @@ impl BulkArgs {
 
         if let Some(found_work) = work_details {
             writeln!(output, "      DETAILS: {{")?;
-
             let mut trimmed_rest = found_work.rest.clone();
             let _ = trimmed_rest.remove(&"type".to_string());
             writeln!(output, "        REST = {trimmed_rest:?}")?;
             writeln!(output, "      }}")?;
         } else {
             writeln!(output, "      DETAILS: {{NONE}}")?;
+        }
+
+        if let Some(editions) = work.edition_key.clone() {
+            if editions.len() > 0 {
+                writeln!(output, "      EDITIONS ({}/{}): {{", min(self.limit.into(), editions.len()), editions.len())?;
+                let mut trunc_editions = editions.clone();
+                trunc_editions.truncate(self.limit.into());
+                for edition in trunc_editions {
+                    writeln!(output, "        {edition}: {{")?;
+                    if let Err(failure) = self.process_edition(&client, output, edition).await {
+                        writeln!(output, "          !!ERROR: {failure:?}")?;
+                    }
+                    writeln!(output, "        }}")?;
+                }
+            }
+        }
+
+        if let Some(authors) = work.author_key.clone() {
+            if authors.len() > 0 {
+                writeln!(output, "      AUTHORS ({}/{}): {{", min(self.limit.into(), authors.len()), authors.len())?;
+                let mut trunc_authors = authors.clone();
+                trunc_authors.truncate(self.limit.into());
+                for author in trunc_authors {
+                    writeln!(output, "        {author}: {{")?;
+                    if let Err(failure) = self.process_author(&client, output, author).await {
+                        writeln!(output, "          !!ERROR: {failure:?}")?;
+                    }
+                    writeln!(output, "        }}")?;
+                }
+            }
         }
 
         Ok(())
