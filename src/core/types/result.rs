@@ -259,9 +259,7 @@ ResultType!(SelectedAuthor ("An author selected with get_author") {
     required = {
         /// Unique ID
         #[serde(default)]
-        key: OLID,
-        /// Result type
-        #[serde(skip_deserializing, default = "SearchResultKind::author")] kind: SearchResultKind
+        key: OLID
     };
     optional = {
         name: String,
@@ -292,9 +290,7 @@ ResultType!(SelectedWork ("A work selected with get_work or get_author_works") {
     required = {
         /// Unique ID
         #[serde(default)]
-        key: OLID,
-        /// Result type
-        #[serde(skip_deserializing, default = "SearchResultKind::work")] kind: SearchResultKind
+        key: OLID
     };
     optional = {
         title: String,
@@ -321,6 +317,70 @@ ResultType!(SelectedWork ("A work selected with get_work or get_author_works") {
         genres: Vec<ExplicitType>,
         subgenres: Vec<ExplicitType>,
         audiences: Vec<ExplicitType>,
+        latest_revision: u64,
+        revision: u64,
+        created: ExplicitType,
+        last_modified: ExplicitType
+    };
+});
+
+ResultType!(SelectedEdition ("An edition selected with get_edition") {
+    required = {
+        /// Unique ID
+        #[serde(default)]
+        key: OLID
+    };
+    optional = {
+        title: String,
+        title_prefix: String,
+        subtitle: String,
+        other_titles: Vec<String>,
+        authors: Vec<ExplicitType>,
+        by_statement: String,
+        publish_date: String,
+        copyright_date: String,
+        edition_name: String,
+        languages: Vec<ExplicitType>,
+        description: ExplicitType,
+        notes: ExplicitType,
+        genres: Vec<String>,
+        table_of_contents: Vec<ExplicitType>,
+        work_titles: Vec<String>,
+        series: Vec<String>,
+        physical_dimensions: String,
+        physical_format: String,
+        number_of_pages: u64,
+        subjects: Vec<String>,
+        pagination: String,
+        lccn: Vec<String>,
+        ocaid: String,
+        oclc_numbers: Vec<String>,
+        isbn_10: Vec<String>,
+        isbn_13: Vec<String>,
+        dewey_decimal_class: Vec<String>,
+        lc_classifications: Vec<String>,
+        contributions: Vec<String>,
+        publish_places: Vec<String>,
+        publish_country: String,
+        publishers: Vec<String>,
+        distributors: Vec<String>,
+        first_sentence: ExplicitType,
+        weight: String,
+        location: Vec<String>,
+        scan_on_demand: bool,
+        collections: Vec<ExplicitType>,
+        uris: Vec<String>,
+        uri_descriptions: Vec<String>,
+        translation_of: String,
+        works: Vec<ExplicitType>,
+        source_records: Vec<String>,
+        translated_from: Vec<ExplicitType>,
+        scan_records: Vec<ExplicitType>,
+        volumes: Vec<ExplicitType>,
+        accompanying_material: String,
+        covers: Vec<u64>,
+        local_id: Vec<String>,
+        full_title: String,
         latest_revision: u64,
         revision: u64,
         created: ExplicitType,

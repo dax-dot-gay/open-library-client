@@ -55,7 +55,7 @@ impl CoreApiHandler {
     }
 
     /// Retrieve a specific author
-    /// Endpoint: [/authors/{author}](https://openlibrary.org/authors/{author})
+    /// Endpoint: [/authors/{author}.json](https://openlibrary.org/authors/{author}.json)
     pub async fn get_author(&self, olid: impl Into<String>) -> crate::Result<Option<types::SelectedAuthor>> {
         let result = self.client.request(Method::GET, format!("authors/{}.json", olid.into())).send().await?;
         if result.status() == StatusCode::NOT_FOUND {
@@ -71,7 +71,7 @@ impl CoreApiHandler {
     }
 
     /// Retrieve a specific work
-    /// Endpoint: [/works/{work}](https://openlibrary.org/works/{work})
+    /// Endpoint: [/works/{work}.json](https://openlibrary.org/works/{work}.json)
     pub async fn get_work(&self, olid: impl Into<String>) -> crate::Result<Option<types::SelectedWork>> {
         let result = self.client.request(Method::GET, format!("works/{}.json", olid.into())).send().await?;
         if result.status() == StatusCode::NOT_FOUND {
@@ -85,4 +85,21 @@ impl CoreApiHandler {
             unreachable!();
         }
     }
+
+    /// Retrieve a specific edition
+    /// Endpoint: [/books/{book}.json](https://openlibrary.org/books/{book}.json)
+    pub async fn get_edition(&self, olid: impl Into<String>) -> crate::Result<Option<types::SelectedEdition>> {
+        let result = self.client.request(Method::GET, format!("books/{}.json", olid.into())).send().await?;
+        if result.status() == StatusCode::NOT_FOUND {
+            Ok(None)
+        } else if result.status().is_success() {
+            let val = result.json::<serde_json::Value>().await?;
+            //println!("{val}");
+            Ok(Some(serde_json::from_value::<types::SelectedEdition>(val)?))
+        } else {
+            result.error_for_status()?;
+            unreachable!();
+        }
+    }
+    
 }

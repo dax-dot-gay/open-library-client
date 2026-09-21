@@ -118,6 +118,19 @@ pub(self) enum UnifiedTaggedValue {
         series: SeriesKT,
         position: String,
     },
+    TocItemObject {
+        class: String,
+        label: String,
+        title: String,
+        pagenum: String
+    },
+    CollectionObject {
+        name: String
+    },
+    ContributorObject {
+        name: String,
+        role: String
+    }
 }
 
 /// Wrapper around various OL type indicators
@@ -153,6 +166,19 @@ pub enum ExplicitType {
         series: String,
         position: String,
     },
+    TocItemObject {
+        class: String,
+        label: String,
+        title: String,
+        pagenum: String
+    },
+    CollectionObject {
+        name: String
+    },
+    ContributorObject {
+        name: String,
+        role: String
+    }
 }
 
 impl From<UnifiedTaggedValue> for ExplicitType {
@@ -192,6 +218,9 @@ impl From<UnifiedTaggedValue> for ExplicitType {
                 series: series.0,
                 position,
             },
+            UnifiedTaggedValue::TocItemObject { class, label, title, pagenum } => Self::TocItemObject { class, label, title, pagenum },
+            UnifiedTaggedValue::CollectionObject { name } => Self::CollectionObject { name },
+            UnifiedTaggedValue::ContributorObject { name, role } => Self::ContributorObject { name, role },
         }
     }
 }
@@ -234,6 +263,9 @@ impl From<ExplicitType> for UnifiedTaggedValue {
                 position,
             },
             ExplicitType::Raw(raw) => Self::Raw(raw),
+            ExplicitType::TocItemObject { class, label, title, pagenum } => Self::TocItemObject { class, label, title, pagenum },
+            ExplicitType::CollectionObject { name } => Self::CollectionObject { name },
+            ExplicitType::ContributorObject { name, role } => Self::ContributorObject { name, role },
         }
     }
 }

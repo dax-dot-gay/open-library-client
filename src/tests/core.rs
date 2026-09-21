@@ -65,3 +65,12 @@ pub async fn get_work() -> crate::Result<()> {
     Ok(())
 }
 
+#[tokio::test]
+pub async fn get_edition() -> crate::Result<()> {
+    let api = client().await;
+    let result = api.core().get_edition("OL36695605M").await?;
+    assert!(result.is_some(), "Should return a result");
+    println!("{result:#?}");
+    Ok(())
+}
+
