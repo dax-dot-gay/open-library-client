@@ -59,7 +59,7 @@ pub async fn get_author() -> crate::Result<()> {
 #[tokio::test]
 pub async fn get_work() -> crate::Result<()> {
     let api = client().await;
-    let result = api.core().get_work("OL27448W").await?;
+    let result = api.core().get_work("OL8193416W").await?;
     assert!(result.is_some(), "Should return a result");
     println!("{result:#?}");
     Ok(())

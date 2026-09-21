@@ -78,7 +78,7 @@ impl CoreApiHandler {
             Ok(None)
         } else if result.status().is_success() {
             let val = result.json::<serde_json::Value>().await?;
-            //println!("{val}");
+            //println!("{val:#?}");
             Ok(Some(serde_json::from_value::<types::SelectedWork>(val)?))
         } else {
             result.error_for_status()?;

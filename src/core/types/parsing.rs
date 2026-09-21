@@ -111,8 +111,8 @@ pub(self) enum UnifiedTaggedValue {
 
         #[serde(default)]
         comment: Option<String>,
-        excerpt: String,
-        author: PeopleKT,
+        excerpt: ExplicitType,
+        author: Option<PeopleKT>,
     },
     Series {
         series: SeriesKT,
@@ -122,15 +122,18 @@ pub(self) enum UnifiedTaggedValue {
         class: String,
         label: String,
         title: String,
-        pagenum: String
+        pagenum: String,
     },
     CollectionObject {
-        name: String
+        name: String,
     },
     ContributorObject {
         name: String,
-        role: String
-    }
+        role: String,
+    },
+    DocsObject {
+        docs: Vec<ExplicitType>,
+    },
 }
 
 /// Wrapper around various OL type indicators
@@ -159,8 +162,8 @@ pub enum ExplicitType {
     ExcerptObject {
         pages: Option<String>,
         comment: Option<String>,
-        excerpt: String,
-        author: String,
+        excerpt: Box<ExplicitType>,
+        author: Option<String>,
     },
     SeriesObject {
         series: String,
@@ -170,15 +173,16 @@ pub enum ExplicitType {
         class: String,
         label: String,
         title: String,
-        pagenum: String
+        pagenum: String,
     },
     CollectionObject {
-        name: String
+        name: String,
     },
     ContributorObject {
         name: String,
-        role: String
-    }
+        role: String,
+    },
+    DocsObject(Vec<ExplicitType>),
 }
 
 impl From<UnifiedTaggedValue> for ExplicitType {
@@ -211,16 +215,29 @@ impl From<UnifiedTaggedValue> for ExplicitType {
             } => Self::ExcerptObject {
                 pages,
                 comment,
-                excerpt,
-                author: author.0,
+                excerpt: Box::new(excerpt),
+                author: author.map(|v| v.0),
             },
             UnifiedTaggedValue::Series { series, position } => Self::SeriesObject {
                 series: series.0,
                 position,
             },
-            UnifiedTaggedValue::TocItemObject { class, label, title, pagenum } => Self::TocItemObject { class, label, title, pagenum },
+            UnifiedTaggedValue::TocItemObject {
+                class,
+                label,
+                title,
+                pagenum,
+            } => Self::TocItemObject {
+                class,
+                label,
+                title,
+                pagenum,
+            },
             UnifiedTaggedValue::CollectionObject { name } => Self::CollectionObject { name },
-            UnifiedTaggedValue::ContributorObject { name, role } => Self::ContributorObject { name, role },
+            UnifiedTaggedValue::ContributorObject { name, role } => {
+                Self::ContributorObject { name, role }
+            }
+            UnifiedTaggedValue::DocsObject { docs } => Self::DocsObject(docs),
         }
     }
 }
@@ -255,17 +272,32 @@ impl From<ExplicitType> for UnifiedTaggedValue {
             } => Self::Excerpt {
                 pages,
                 comment,
-                excerpt,
-                author: PeopleKT(author),
+                excerpt: *excerpt,
+                author: author.map(|v| PeopleKT(v)),
             },
             ExplicitType::SeriesObject { series, position } => Self::Series {
                 series: SeriesKT(series),
                 position,
             },
             ExplicitType::Raw(raw) => Self::Raw(raw),
-            ExplicitType::TocItemObject { class, label, title, pagenum } => Self::TocItemObject { class, label, title, pagenum },
+            ExplicitType::TocItemObject {
+                class,
+                label,
+                title,
+                pagenum,
+            } => Self::TocItemObject {
+                class,
+                label,
+                title,
+                pagenum,
+            },
             ExplicitType::CollectionObject { name } => Self::CollectionObject { name },
-            ExplicitType::ContributorObject { name, role } => Self::ContributorObject { name, role },
+            ExplicitType::ContributorObject { name, role } => {
+                Self::ContributorObject { name, role }
+            }
+            ExplicitType::DocsObject(explicit_types) => Self::DocsObject {
+                docs: explicit_types,
+            },
         }
     }
 }

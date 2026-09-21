@@ -15,6 +15,11 @@ pub enum OpenLibraryErrorKind {
     #[construct(skip)]
     Reqwest(#[from] reqwest::Error),
 
+    /// Wrapper around [`std::io::Error`]
+    #[error("I/O error: {0:?}")]
+    #[construct(skip)]
+    Io(#[from] std::io::Error),
+
     /// Wrapper around [`serde_json::Error`]
     #[error("JSON error: {0:?}")]
     #[construct(skip)]
