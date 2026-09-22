@@ -17,5 +17,11 @@ pub use core::CoreApi;
 mod util;
 pub(crate) use util::*;
 
+pub mod wrapper;
+
+#[cfg(feature = "macros")]
+/// A macro that generates and validates SOLR queries from a DSL.
+pub use open_library_client_macros::solr;
+
 #[cfg(test)]
 mod tests;
