@@ -13,7 +13,7 @@ use crate::{
 #[doc(hidden)]
 #[allow(missing_docs)]
 pub async fn generic_search<R: DeserializeOwned>(
-    #[builder(start_fn)] client: crate::Client,
+    #[builder(start_fn)] client: crate::core::OpenLibraryClientCore,
 
     #[builder(start_fn)] kind: super::SearchResultKind,
 

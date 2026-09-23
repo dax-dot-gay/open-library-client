@@ -1,5 +1,5 @@
 use clap::Args;
-use open_library_client::{Client, CoreApi, core::types::SearchWork};
+use open_library_client::{OpenLibraryClientCore, core::types::SearchWork};
 use std::{cmp::min, fs::File, io::Write, time::Duration};
 
 #[derive(Clone, Debug, Args)]
@@ -17,8 +17,8 @@ pub struct BulkArgs {
 }
 
 impl BulkArgs {
-    async fn process_edition(&self, client: &Client, output: &mut File, edition: String) -> crate::Result<()> {
-        let edition_details = client.core().get_edition(edition).await?;
+    async fn process_edition(&self, client: &OpenLibraryClientCore, output: &mut File, edition: String) -> crate::Result<()> {
+        let edition_details = client.get_edition(edition).await?;
         if let Some(found_ed) = edition_details {
             writeln!(output, "          DETAILS: {{")?;
             let mut trimmed_rest = found_ed.rest.clone();
@@ -31,8 +31,8 @@ impl BulkArgs {
         Ok(())
     }
 
-    async fn process_author(&self, client: &Client, output: &mut File, author: String) -> crate::Result<()> {
-        let author_details = client.core().get_author(author).await?;
+    async fn process_author(&self, client: &OpenLibraryClientCore, output: &mut File, author: String) -> crate::Result<()> {
+        let author_details = client.get_author(author).await?;
         if let Some(found_au) = author_details {
             writeln!(output, "          DETAILS: {{")?;
             let mut trimmed_rest = found_au.rest.clone();
@@ -47,11 +47,11 @@ impl BulkArgs {
 
     async fn process_work(
         &self,
-        client: &Client,
+        client: &OpenLibraryClientCore,
         output: &mut File,
         work: SearchWork,
     ) -> crate::Result<()> {
-        let work_details = client.core().get_work(work.key.clone()).await?;
+        let work_details = client.get_work(work.key.clone()).await?;
 
         if let Some(found_work) = work_details {
             writeln!(output, "      DETAILS: {{")?;
@@ -98,12 +98,12 @@ impl BulkArgs {
 
     async fn process_subj(
         &self,
-        client: &Client,
+        client: &OpenLibraryClientCore,
         output: &mut File,
         subj: String,
     ) -> crate::Result<()> {
         let works = client
-            .core()
+            
             .search_books(format!("subject:{subj}"))
             .limit(self.limit)
             .fields("key,edition_key,author_key,title")
@@ -129,12 +129,12 @@ impl BulkArgs {
 
     async fn process_root(
         &self,
-        client: &Client,
+        client: &OpenLibraryClientCore,
         output: &mut File,
         root: String,
     ) -> crate::Result<()> {
         let subjects = client
-            .core()
+            
             .search_subjects(root.clone())
             .limit(self.limit)
             .search()
@@ -156,11 +156,7 @@ impl BulkArgs {
     }
 
     pub async fn run(&self) -> crate::Result<()> {
-        let client = Client::builder()
-            .client(reqwest::ClientBuilder::new().timeout(Duration::from_secs(120)))
-            .user_agent("open_library_client/bin/util.bulk (git@dax.gay)")
-            .build()
-            .await?;
+        let client = OpenLibraryClientCore::from_existing(reqwest::ClientBuilder::new().timeout(Duration::from_secs(120)), Some("open_library_client/bin/util.bulk (git@dax.gay)"))?;
         let mut output = std::fs::File::create(self.output.clone())?;
 
         for root in self.subjects.clone() {

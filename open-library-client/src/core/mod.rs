@@ -10,27 +10,48 @@ use crate::{
     params,
 };
 
-/// Struct representing the core API wrapper
+/// Simple client to wrap low-level API calls
 #[derive(Clone, Debug)]
-pub struct CoreApiHandler {
-    pub(crate) client: crate::Client,
-}
+pub struct OpenLibraryClientCore(reqwest::Client);
 
-/// Trait for fetching a [`CoreApiHandler`] instance
-pub trait CoreApi {
-    /// Return an instance of [`CoreApiHandler`] bound to this client
-    fn core(&self) -> CoreApiHandler;
-}
-
-impl CoreApi for crate::Client {
-    fn core(&self) -> CoreApiHandler {
-        CoreApiHandler {
-            client: self.clone(),
+impl OpenLibraryClientCore {
+    /// Create a new client with an optional user agent
+    pub fn new(user_agent: Option<impl Into<String>>) -> Self {
+        let mut builder = reqwest::Client::builder().cookie_store(true);
+        if let Some(ua) = user_agent.map(Into::into) {
+            builder = builder.user_agent(ua);
         }
+
+        Self(builder.build().unwrap())
+    }
+
+    /// Create a client from an existing [`reqwest::Client`]
+    pub fn from_existing(client: reqwest::ClientBuilder, user_agent: Option<impl Into<String>>) -> crate::Result<Self> {
+        let mut builder = client.cookie_store(true);
+        if let Some(ua) = user_agent.map(Into::into) {
+            builder = builder.user_agent(ua);
+        }
+
+        Ok(Self(builder.build()?))
+    }
+
+    /// Generate a request builder prefixed with "https://openlibrary.org/". Leading slashes are trimmed.
+    pub fn request(&self, method: Method, endpoint: impl Into<String>) -> reqwest::RequestBuilder {
+        self.0.request(method, format!("https://openlibrary.org/{}", endpoint.into().trim_start_matches('/')))
+    }
+
+    /// Make a request with this client, with no prefix
+    /// Identical functionality to [`reqwest::Client::request`]
+    pub fn request_raw(
+        &self,
+        method: Method,
+        url: impl reqwest::IntoUrl
+    ) -> reqwest::RequestBuilder {
+        self.0.request(method, url)
     }
 }
 
-impl CoreApiHandler {
+impl OpenLibraryClientCore {
     /// Search for books
     /// Endpoint: [/search.json](https://openlibrary.org/search.json)
     pub fn search_books(
@@ -38,7 +59,7 @@ impl CoreApiHandler {
         query: impl Into<String>,
     ) -> GenericSearchBuilder<types::SearchWork> {
         generic_search(
-            self.client.clone(),
+            self.clone(),
             types::SearchResultKind::Work,
             query.into(),
         )
@@ -51,7 +72,7 @@ impl CoreApiHandler {
         query: impl Into<String>,
     ) -> GenericSearchBuilder<types::SearchAuthor> {
         generic_search(
-            self.client.clone(),
+            self.clone(),
             types::SearchResultKind::Author,
             query.into(),
         )
@@ -64,7 +85,7 @@ impl CoreApiHandler {
         query: impl Into<String>,
     ) -> GenericSearchBuilder<types::SearchSubject> {
         generic_search(
-            self.client.clone(),
+            self.clone(),
             types::SearchResultKind::Subject,
             query.into(),
         )
@@ -77,7 +98,6 @@ impl CoreApiHandler {
         olid: impl Into<String>,
     ) -> crate::Result<Option<types::SelectedAuthor>> {
         let result = self
-            .client
             .request(Method::GET, format!("authors/{}.json", olid.into()))
             .send()
             .await?;
@@ -100,7 +120,6 @@ impl CoreApiHandler {
         olid: impl Into<String>,
     ) -> crate::Result<Option<types::SelectedWork>> {
         let result = self
-            .client
             .request(Method::GET, format!("works/{}.json", olid.into()))
             .send()
             .await?;
@@ -123,7 +142,6 @@ impl CoreApiHandler {
         olid: impl Into<String>,
     ) -> crate::Result<Option<types::SelectedEdition>> {
         let result = self
-            .client
             .request(Method::GET, format!("books/{}.json", olid.into()))
             .send()
             .await?;
@@ -141,7 +159,7 @@ impl CoreApiHandler {
 }
 
 #[bon::bon]
-impl CoreApiHandler {
+impl OpenLibraryClientCore {
     /// Retrieve an author's works
     /// Endpoint: [/authors/{olid}/works.json](https://openlibrary.org/authors/{olid}/works.json)
     #[builder(finish_fn = get)]
@@ -156,7 +174,6 @@ impl CoreApiHandler {
         offset: Option<u64>,
     ) -> crate::Result<Option<types::PageLinkedRecords<types::SelectedWork>>> {
         let result = self
-            .client
             .request(Method::GET, format!("authors/{}/works.json", author))
             .query(params!("limit" = limit, "offset" = offset))
             .send()
@@ -201,15 +218,16 @@ impl CoreApiHandler {
         /// How many results to offset by
         offset: Option<u64>,
     ) -> crate::Result<types::SelectedSubject> {
-        let result = self.client.request(Method::GET, format!("subjects/{subject}.json")).query(params!(
+        let result = self.request(Method::GET, format!("subjects/{subject}.json")).query(params!(
             "details" = details,
             "ebooks" = ebooks,
             "published_in" = published_in,
             "limit" = limit,
             "offset" = offset
         )).send().await?.error_for_status()?;
-
-        Ok(result.json::<types::SelectedSubject>().await?)
+        let val = result.json::<serde_json::Value>().await?;
+        //println!("{val:#?}");
+        Ok(serde_json::from_value::<types::SelectedSubject>(val)?)
     }
 
     /// Get the URL to an image (cover or author)
@@ -248,7 +266,7 @@ impl CoreApiHandler {
         #[builder(default)] size: types::covers::CoverImageSize,
     ) -> crate::Result<Bytes> {
         let url = self.get_cover_image_url(key).cover_type(cover_type).key_type(key_type).size(size).get();
-        let response = self.client.request_raw(Method::GET, url).send().await?.error_for_status()?;
+        let response = self.request_raw(Method::GET, url).send().await?.error_for_status()?;
         Ok(response.bytes().await?)
     }
 
@@ -266,7 +284,7 @@ impl CoreApiHandler {
         #[builder(default)] key_type: types::covers::CoverKeyType
     ) -> crate::Result<types::CoverImage> {
         let url = format!("https://covers.openlibrary.org/{cover_type}/{key_type}/{key}.json");
-        let response = self.client.request_raw(Method::GET, url).send().await?.error_for_status()?;
+        let response = self.request_raw(Method::GET, url).send().await?.error_for_status()?;
         Ok(response.json::<types::CoverImage>().await?)
     }
 }

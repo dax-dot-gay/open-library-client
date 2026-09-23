@@ -8,11 +8,8 @@ mod error;
 pub use error::{OpenLibraryError, OpenLibraryErrorKind};
 pub(crate) use error::{OpenLibraryError as Error, Result};
 
-mod client;
-pub use client::Client;
-
 pub mod core;
-pub use core::CoreApi;
+pub use core::{OpenLibraryClientCore, types::*};
 
 mod util;
 pub(crate) use util::*;
