@@ -4,13 +4,7 @@ use std::{
     fmt::Display,
     ops::{Deref, DerefMut},
 };
-
-use open_library_client_macros::solr;
 use serde::{Deserialize, Serialize};
-
-fn test() {
-    solr!(crate = crate, -title:"test", beans:("x" | "y"), +"'some phrase'", rest:15, desc:"here be"~1);
-}
 
 /// Top-level SOLR query
 #[derive(Serialize, Deserialize, Clone, Debug)]
