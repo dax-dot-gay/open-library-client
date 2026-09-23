@@ -25,6 +25,11 @@ pub enum OpenLibraryErrorKind {
     #[construct(skip)]
     SerdeJson(#[from] serde_json::Error),
 
+    /// Wrapper around [`cached::stores::BuildError`]
+    #[error("Failed to construct cache: {0:?}")]
+    #[construct(skip)]
+    CacheBuild(#[from] cached::stores::BuildError),
+
     /// Invalid authentication provided
     #[error("Authentication failed with code {code}: {reason}")]
     LoginFailed {
@@ -43,6 +48,13 @@ pub enum OpenLibraryErrorKind {
 
         /// Expected type
         expected: String
+    },
+
+    /// Cache with the specified name already exists
+    #[error("A cache named {name} already exists.")]
+    CacheExists {
+        /// Name of the cache
+        name: String
     }
 }
 
