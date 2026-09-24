@@ -5,6 +5,3 @@ pub use solr::*;
 
 mod client;
 pub use client::*;
-
-pub mod caches;
-pub use caches::Cache;

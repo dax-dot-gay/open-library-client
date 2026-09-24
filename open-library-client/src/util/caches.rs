@@ -113,18 +113,6 @@ impl<S: Cacheable> Cache<S> {
     }
 }
 
-/*
-let mut stores = CACHE_STORE.write();
-let mut store = stores.get_mut(&self.name()).unwrap();
-let result = match store {
-    StoredCache::Unbound(cache) => todo!(),
-    StoredCache::Lru(cache) => todo!(),
-    StoredCache::Ttl(cache) => todo!(),
-    StoredCache::LruTtl(cache) => todo!(),
-    StoredCache::TtlSorted(cache) => todo!(),
-};
-*/
-
 impl<S: Cacheable> Cache<S> {
     /// Get the name of this cache
     pub fn name(&self) -> String {
@@ -132,7 +120,7 @@ impl<S: Cacheable> Cache<S> {
     }
 
     /// Attempt to get a value from this cache
-    pub fn get(&self, key: impl Display) -> crate::Result<Option<S>> {
+    pub fn get(&self, key: impl Display) -> crate::Result<Option<S::Value>> {
         let key = key.to_string();
         let mut stores = CACHE_STORE.write();
         let store = stores.get_mut(&self.name()).unwrap();
@@ -145,7 +133,7 @@ impl<S: Cacheable> Cache<S> {
         }
         .cloned();
         if let Some(r) = result {
-            Ok(Some(serde_json::from_value::<S>(r)?))
+            Ok(Some(serde_json::from_value::<S::Value>(r)?))
         } else {
             Ok(None)
         }
@@ -168,7 +156,7 @@ impl<S: Cacheable> Cache<S> {
     /// Insert an item into cache. This will silently replace existing entries.
     pub fn set(&self, item: impl Cacheable) -> crate::Result<()> {
         let key = item.key();
-        let serialized = serde_json::to_value(item)?;
+        let serialized = serde_json::to_value(item.value())?;
         let mut stores = CACHE_STORE.write();
         let store = stores.get_mut(&self.name()).unwrap();
         let _ = match store {
@@ -182,9 +170,9 @@ impl<S: Cacheable> Cache<S> {
     }
 
     /// Insert an item into the cache. If an item with the value's key already exists, replace it and return it
-    pub fn insert(&self, item: impl Cacheable) -> crate::Result<Option<S>> {
+    pub fn insert(&self, item: impl Cacheable) -> crate::Result<Option<S::Value>> {
         let key = item.key();
-        let serialized = serde_json::to_value(item)?;
+        let serialized = serde_json::to_value(item.value())?;
         let mut stores = CACHE_STORE.write();
         let store = stores.get_mut(&self.name()).unwrap();
         let existing = match store {
@@ -195,7 +183,7 @@ impl<S: Cacheable> Cache<S> {
             StoredCache::TtlSorted(cache) => cache.cache_set(key, serialized),
         };
         if let Some(ex) = existing {
-            Ok(Some(serde_json::from_value::<S>(ex)?))
+            Ok(Some(serde_json::from_value::<S::Value>(ex)?))
         } else {
             Ok(None)
         }
@@ -217,7 +205,7 @@ impl<S: Cacheable> Cache<S> {
     }
 
     /// Removes a value from the cache, returning it. This may fail after the removal completes.
-    pub fn take(&self, key: impl Display) -> crate::Result<Option<S>> {
+    pub fn take(&self, key: impl Display) -> crate::Result<Option<S::Value>> {
         let key = key.to_string();
         let mut stores = CACHE_STORE.write();
         let store = stores.get_mut(&self.name()).unwrap();
@@ -229,7 +217,7 @@ impl<S: Cacheable> Cache<S> {
             StoredCache::TtlSorted(cache) => cache.cache_remove(&key),
         };
         if let Some(r) = result {
-            Ok(Some(serde_json::from_value::<S>(r)?))
+            Ok(Some(serde_json::from_value::<S::Value>(r)?))
         } else {
             Ok(None)
         }
@@ -347,7 +335,13 @@ CacheBuilder!(
 );
 
 /// An item that can be added to or retrieved from a cache
-pub trait Cacheable: Clone + Debug + Serialize + DeserializeOwned {
+pub trait Cacheable {
+    /// Type of value to be cached
+    type Value: Clone + Debug + Serialize + DeserializeOwned;
+
     /// Return the key of this instance (should be unique, will be used to retrieve from the cache later)
     fn key(&self) -> String;
+
+    /// Return the value to be cached
+    fn value(&self) -> Self::Value;
 }

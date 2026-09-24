@@ -25,6 +25,16 @@ pub enum OpenLibraryErrorKind {
     #[construct(skip)]
     SerdeJson(#[from] serde_json::Error),
 
+    /// Wrapper around [`serde_urlencoded::de::Error`]
+    #[error("URL deserialization error: {0:?}")]
+    #[construct(skip)]
+    UrlDecode(#[from] serde_urlencoded::de::Error),
+
+    /// Wrapper around [`serde_urlencoded::ser::Error`]
+    #[error("URL serialization error: {0:?}")]
+    #[construct(skip)]
+    UrlEncode(#[from] serde_urlencoded::ser::Error),
+
     /// Wrapper around [`cached::stores::BuildError`]
     #[error("Failed to construct cache: {0:?}")]
     #[construct(skip)]
@@ -55,6 +65,13 @@ pub enum OpenLibraryErrorKind {
     CacheExists {
         /// Name of the cache
         name: String
+    },
+
+    /// Unable to convert the supplied value into a Method
+    #[error("Unknown method: {method}")]
+    UnknownHttpMethod {
+        /// Supplied method
+        method: String
     }
 }
 

@@ -11,8 +11,7 @@ pub(crate) use error::{OpenLibraryError as Error, Result};
 pub mod core;
 pub use core::{OpenLibraryClientCore, types::*};
 
-mod util;
-pub(crate) use util::*;
+pub mod util;
 
 pub mod wrapper;
 

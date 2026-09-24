@@ -1,3 +1,6 @@
+/// Combines a set of {key} = {value} pairs into an input for a query string.
+/// Omits null values
+#[macro_export]
 macro_rules! params {
     ($($key:literal = $value:expr),*) => {
         &{
@@ -12,4 +15,4 @@ macro_rules! params {
     };
 }
 
-pub(crate) use params;
+pub use params;
